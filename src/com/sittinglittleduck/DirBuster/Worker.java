@@ -29,14 +29,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NoHttpResponseException;
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 
@@ -260,40 +257,10 @@ public class Worker implements Runnable
                 Thread.sleep(20);
 
             }
-            catch(NoHttpResponseException e)
-            {
-                manager.foundError(url, "NoHttpResponseException " + e.getMessage());
-                manager.workDone();
-            }
-            catch(ConnectTimeoutException e)
-            {
-                manager.foundError(url, "ConnectTimeoutException " + e.getMessage());
-                manager.workDone();
-            }
-            catch(URIException e)
-            {
-                manager.foundError(url, "URIException " + e.getMessage());
-                manager.workDone();
-            }
-            catch(IOException e)
-            {
-
-                manager.foundError(url, "IOException " + e.getMessage());
-                manager.workDone();
-            }
-            catch(InterruptedException e)
-            {
-                //manager.foundError(url, "InterruptedException " + e.getMessage());
-                manager.workDone();
-                return;
-            }
-            catch(IllegalArgumentException e)
-            {
-
-                e.printStackTrace();
-                manager.foundError(url, "IllegalArgumentException " + e.getMessage());
-                manager.workDone();
-            }
+            catch(IOException | InterruptedException | IllegalArgumentException e) {
+            	manager.foundError(url, e.toString());
+                manager.workDone();            	
+            }            
             finally
             {
             	if (httpMethod != null){
